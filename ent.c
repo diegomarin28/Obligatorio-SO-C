@@ -230,9 +230,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    /* 3. Validar y parsear todos los operandos (argv[2] en adelante) */
-    int num_operands = argc - 2; /* cuántos números hay */
-
     /* Validar todos primero antes de crear ningún Bigint */
     for (int i = 2; i < argc; i++) {
         if (!is_decimal_string(argv[i])) {
@@ -261,10 +258,10 @@ int main(int argc, char *argv[]) {
         acumulador = nueva_suma; /* el resultado es el nuevo acumulador */
     }
 
-    /* 4. Imprimir resultado en stdout (solo el número, nada más) */
+    /* 3. Imprimir resultado en stdout (solo el número, nada más) */
     bigint_print(acumulador);
 
-    /* 5. Liberar memoria */
+    /* 4. Liberar memoria */
     bigint_free(acumulador);
 
     return 0;
