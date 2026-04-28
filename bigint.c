@@ -5,7 +5,6 @@
  * e imprimir un Bigint. Las operaciones matemáticas están en ops.c.
  *
  * Para usar estas funciones desde otro archivo, hay que incluir bigint.h.
- * Un .h solo declara que las funciones existen.
  */
 
 #include <stdio.h>   /* printf, fprintf */
