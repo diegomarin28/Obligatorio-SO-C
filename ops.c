@@ -223,58 +223,59 @@ Bigint *bigint_sub(const Bigint *a, const Bigint *b) {
  * El signo del resultado: positivo si ambos tienen el mismo signo, negativo si no.
  */
 Bigint *bigint_mul(const Bigint *a, const Bigint *b) {
-    int result_len = a->len + b->len; /* el producto tiene como máximo a->len + b->len dígitos */
+    int result_len = a->len + b->len;
 
     if (result_len > MAX_DIGITS) {
         fprintf(stderr, "Error: resultado excede el maximo de digitos\n");
         return NULL;
     }
 
-    Bigint *result = malloc(sizeof(Bigint));
-    if (result == NULL) { fprintf(stderr, "Error: sin memoria\n"); return NULL; }
-
-    result->digits = malloc(result_len + 1);
-    if (result->digits == NULL) {
+    /* Usamos int para los intermedios porque pueden superar 127 (límite de char) */
+    int *temp = calloc(result_len + 1, sizeof(int));
+    if (temp == NULL) {
         fprintf(stderr, "Error: sin memoria\n");
-        free(result);
         return NULL;
     }
 
-    /* Inicializar todos los dígitos en 0 */
-    for (int k = 0; k < result_len; k++) {
-        result->digits[k] = 0;
-    }
-    result->len  = result_len;
-    result->sign = 1;
-
-    /* Multiplicación larga: cada dígito de a por cada dígito de b */
+    /* Multiplicación larga */
     for (int i = 0; i < a->len; i++) {
         for (int j = 0; j < b->len; j++) {
-            result->digits[i + j] += a->digits[i] * b->digits[j];
+            temp[i + j] += a->digits[i] * b->digits[j];
         }
     }
 
-    /* Normalizar acarreos: si algún dígito es >= 10, propagamos */
+    /* Propagar acarreos */
     for (int k = 0; k < result_len - 1; k++) {
-        if (result->digits[k] >= 10) {
-            result->digits[k + 1] += result->digits[k] / 10;
-            result->digits[k]      = result->digits[k] % 10;
-        }
+        temp[k + 1] += temp[k] / 10;
+        temp[k]      = temp[k] % 10;
     }
 
-    /* Normalizar longitud: eliminar ceros a la izquierda */
+    /* Crear el Bigint resultado */
+    Bigint *result = malloc(sizeof(Bigint));
+    if (result == NULL) { free(temp); fprintf(stderr, "Error: sin memoria\n"); return NULL; }
+
+    result->digits = malloc(result_len + 1);
+    if (result->digits == NULL) {
+        free(temp); free(result);
+        fprintf(stderr, "Error: sin memoria\n");
+        return NULL;
+    }
+
+    /* Copiar de int[] a char[] */
+    for (int k = 0; k < result_len; k++) {
+        result->digits[k] = (char)temp[k];
+    }
+    free(temp);
+
+    result->len  = result_len;
+    result->sign = (a->sign == b->sign) ? 1 : -1;
+
+    /* Normalizar ceros a la izquierda */
     while (result->len > 1 && result->digits[result->len - 1] == 0) {
         result->len--;
     }
 
-    /* Signo: positivo si ambos tienen el mismo signo, negativo si no */
-    if (a->sign == b->sign) {
-        result->sign = 1;
-    } else {
-        result->sign = -1;
-    }
-
-    /* Si el resultado es 0, el signo siempre es positivo */
+    /* El cero siempre es positivo */
     if (result->len == 1 && result->digits[0] == 0) {
         result->sign = 1;
     }
