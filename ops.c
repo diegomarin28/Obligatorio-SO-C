@@ -11,9 +11,7 @@
 #include "bigint.h"
 
 
-/* ════════════════════════════════════════════════════════════
- * FUNCIONES AUXILIARES INTERNAS (no se exponen en bigint.h)
- * ════════════════════════════════════════════════════════════ */
+/*  FUNCIONES AUXILIARES INTERNAS (no se exponen en bigint.h)*/
 
 /*
  * bigint_abs_cmp: compara los valores absolutos de dos Bigint.
@@ -135,9 +133,7 @@ static Bigint *sub_magnitudes(const Bigint *a, const Bigint *b) {
 }
 
 
-/* ════════════════════════════════════════════════════════════
- * OPERACIONES PÚBLICAS
- * ════════════════════════════════════════════════════════════ */
+/* OPERACIONES PÚBLICAS*/
 
 /*
  * bigint_add: suma dos Bigint considerando sus signos.
